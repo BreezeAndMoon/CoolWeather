@@ -6,6 +6,8 @@ import android.view.TextureView;
 import com.example.fym.coolweather.db.City;
 import com.example.fym.coolweather.db.Country;
 import com.example.fym.coolweather.db.Province;
+import com.example.fym.coolweather.model.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,9 +20,9 @@ import org.json.JSONObject;
 public class Utility {
     public static boolean handleProvinceResponse(String response) {
         if (!TextUtils.isEmpty(response)) {
-            try{
+            try {
                 JSONArray allProvinces = new JSONArray(response);
-                for (int i =0;i<allProvinces.length();i++) {
+                for (int i = 0; i < allProvinces.length(); i++) {
                     JSONObject provinceObject = allProvinces.getJSONObject(i);
                     Province province = new Province();
                     province.setProvinceName(provinceObject.getString("name"));
@@ -28,7 +30,7 @@ public class Utility {
                     province.save();
                 }
                 return true;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -39,7 +41,7 @@ public class Utility {
         if (!TextUtils.isEmpty(response)) {
             try {
                 JSONArray allCities = new JSONArray(response);
-                for (int i=0;i<allCities.length();i++) {
+                for (int i = 0; i < allCities.length(); i++) {
                     JSONObject cityObject = allCities.getJSONObject(i);
                     City city = new City();
                     city.setCityName(cityObject.getString("name"));
@@ -59,7 +61,7 @@ public class Utility {
         if (!TextUtils.isEmpty(response)) {
             try {
                 JSONArray allCountries = new JSONArray(response);
-                for (int i =0;i<allCountries.length();i++) {
+                for (int i = 0; i < allCountries.length(); i++) {
                     JSONObject countryObject = allCountries.getJSONObject(i);
                     Country country = new Country();
                     country.setCountryName(countryObject.getString("name"));
@@ -74,4 +76,17 @@ public class Utility {
         }
         return false;
     }
+
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.fym.coolweather.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fym.coolweather.Constant;
+import com.example.fym.coolweather.MainActivity;
 import com.example.fym.coolweather.R;
+import com.example.fym.coolweather.WeatherActivity;
 import com.example.fym.coolweather.db.City;
 import com.example.fym.coolweather.db.Country;
 import com.example.fym.coolweather.db.Province;
@@ -57,7 +60,6 @@ public class ChooseAreaFragment extends Fragment {
     private List<Country> mCountryList;
     private Province mSelectedProvince;
     private City mSelectedCity;
-    private Country mSelectedCountry;
     private int mCurrentLevel;
 
 
@@ -80,6 +82,19 @@ public class ChooseAreaFragment extends Fragment {
                 } else if (mCurrentLevel == LEVEL_CITY) {
                     mSelectedCity = mCityList.get(position);
                     queryCountries();
+                } else if (mCurrentLevel == LEVEL_COUNTRY) {
+                   String weatherId  = mCountryList.get(position).getWeatherId();
+                   if(getActivity() instanceof MainActivity) {
+                       Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                       intent.putExtra(Constant.WEATHERID, weatherId);
+                       startActivity(intent);
+                       getActivity().finish();
+                   }else if(getActivity() instanceof WeatherActivity){
+                       WeatherActivity weatherActivity = (WeatherActivity) getActivity();
+                       weatherActivity.mDrawerLayout.closeDrawers();
+                       weatherActivity.mSwipeRefresh.setRefreshing(true);
+                       weatherActivity.requestWeather(weatherId);
+                   }
                 }
             }
         });
@@ -136,7 +151,7 @@ public class ChooseAreaFragment extends Fragment {
         mTitleTextView.setText(mSelectedCity.getCityName());
         mBackButton.setVisibility(View.VISIBLE);
         mCountryList = DataSupport.where("cityid=?", String.valueOf(mSelectedCity.getId())).find(Country.class);
-        if (mCityList.size() > 0) {
+        if (mCountryList.size() > 0) {
             mDataList.clear();
             for (Country country : mCountryList) {
                 mDataList.add(country.getCountryName());
