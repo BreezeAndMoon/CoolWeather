@@ -1,5 +1,6 @@
 package com.example.fym.coolweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.Image;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.fym.coolweather.model.Forecast;
 import com.example.fym.coolweather.model.Weather;
+import com.example.fym.coolweather.service.AutoUpdateService;
 import com.example.fym.coolweather.util.HttpUtil;
 import com.example.fym.coolweather.util.Utility;
 
@@ -174,6 +176,9 @@ public class WeatherActivity extends AppCompatActivity {
         mCarWashTextView.setText(carWash);
         mSportTextView.setText(sport);
         mScrollView.setVisibility(View.VISIBLE);
+        //启动自动更新服务
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     public void requestWeather(String weatherId) {
